@@ -113,9 +113,33 @@ def point_add(a: Integer, b: Integer, p: Integer, point0: Point, point1: Point) 
     of the other: (xq, yq) == -(xp, yp) == (xp, -yp).
     """
 
-    # TODO: ADD YOUR CODE BELOW
     xr, yr = None, None
-    ...
+    xp, yp = point0
+    xq, yq = point1
+
+    
+    # special cases: 
+
+    # one point being inf:
+    if xp is None and yp is None:
+        return point1    
+    if xq is None and yq is None:
+        return point0
+
+    # raise exception for (xp, yq) == (xq, yq):
+    if point0 == point1:
+        raise Exception("EC Points must not be equal")
+    
+    # one point being the other's negation:
+    if (xp == xq) and (yp == (p - yq)):
+        return Point(None, None)
+    
+
+    xminus = (p + xq - xp) % p # xminus = (xq - xp) mod p
+    xinv = pow(xminus, p-2, p) # xinv = (xq - xp)^-1 mod p
+    lam = ((yq - yp) * xinv) % p
+    xr  = (lam**2 - xp - xq) % p
+    yr  = (lam * (xp - xr) - yp) % p
 
     return Point(xr, yr)
 
