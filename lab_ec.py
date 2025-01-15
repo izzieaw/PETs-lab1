@@ -190,7 +190,7 @@ def point_scalar_multiplication_double_and_add(a: Integer, b: Integer, p: Intege
     result = Point(None, None)
 
     for i in range(scalar.size_in_bits()):
-        if (scalar >> i) & Integer(1) == Integer(1):
+        if (scalar >> i) & Integer(1) == Integer(1): 
             result = point_add(a=a, b=b, p=p, point0=result, point1=point)
         point = point_double(a=a, b=b, p=p, point=point)
 
@@ -219,9 +219,12 @@ def point_scalar_multiplication_montgomerry_ladder(a: Integer, b: Integer, p: In
     res1 = point
 
     for i in reversed(range(0, scalar.size_in_bits())):
-        # TODO: ADD YOUR CODE HERE
-        ...
-
+        if (scalar >> i) & Integer(1) == Integer(0):
+            res0 = point_double(a=a, b=b, p=p, point=res0)
+            res1 = point_add(a=a, b=b, p=p, point0=res0, point1=res1)
+        else:
+            res0 = point_add(a=a, b=b, p=p, point0=res0, point1=res1)
+            res1 = point_double(a=a, b=b, p=p, point=res1)
     return res0
 
 
