@@ -136,7 +136,7 @@ def point_add(a: Integer, b: Integer, p: Integer, point0: Point, point1: Point) 
     
 
     xminus = (p + xq - xp) % p # xminus = (xq - xp) mod p
-    xinv = pow(xminus, p-2, p) # xinv = (xq - xp)^-1 mod p
+    xinv = Integer(xminus).inverse(p)
     lam = ((yq - yp) * xinv) % p
     xr  = (lam**2 - xp - xq) % p
     yr  = (lam * (xp - xr) - yp) % p
@@ -156,9 +156,18 @@ def point_double(a: Integer, b: Integer, p: Integer, point: Point) -> Point:
     Returns the point representing the double of the input (x, y).
     """
 
-    # TODO: ADD YOUR CODE BELOW
     xr, yr = None, None
-    ...
+    xp, yp = point
+
+    # special case: when point is None
+    if xp is None and yp is None:
+        return point
+
+    y2 = (Integer(2)*yp) % p
+    yinv = pow(y2, p-2, p)
+    lam = ((Integer(3) * xp**2 + a) * yinv) % p
+    xr  = (lam**2 - Integer(2) * xp) % p
+    yr  = (lam * (xp - xr) - yp) % p
 
     return Point(xr, yr)
 
