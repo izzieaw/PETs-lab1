@@ -164,7 +164,7 @@ def point_double(a: Integer, b: Integer, p: Integer, point: Point) -> Point:
         return point
 
     y2 = (Integer(2)*yp) % p
-    yinv = pow(y2, p-2, p)
+    yinv = y2.inverse(p)
     lam = ((Integer(3) * xp**2 + a) * yinv) % p
     xr  = (lam**2 - Integer(2) * xp) % p
     yr  = (lam * (xp - xr) - yp) % p
