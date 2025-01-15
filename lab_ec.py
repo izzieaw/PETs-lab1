@@ -37,7 +37,6 @@ AuthEncryption = tuple[Nonce, CipherText, Tag]
 def encrypt_message(key: SymKey, message: Message) -> AuthEncryption:
     """Encrypt a message under a key given as input"""
 
-    ...  # TODO: ADD YOUR CODE HERE
     nonce = urandom(12)
     cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
     ciphertext, tag = cipher.encrypt_and_digest(message)
@@ -50,10 +49,15 @@ def decrypt_message(key: SymKey, auth_ciphertext: AuthEncryption) -> Message:
 
     In case the decryption fails, throw an exception.
     """
-    ...  # TODO: ADD YOUR CODE HERE
-    plaintext = ...
-
-    return plaintext
+    try:
+        nonce, ciphertext, tag = auth_ciphertext
+        cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+        plaintext = cipher.decrypt_and_verify(ciphertext, tag)
+        return plaintext
+    except Exception as e:
+        print("Decryption failed:", e)
+        raise
+    
 
 
 #####################################################
