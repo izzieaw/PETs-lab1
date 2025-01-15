@@ -38,8 +38,9 @@ def encrypt_message(key: SymKey, message: Message) -> AuthEncryption:
     """Encrypt a message under a key given as input"""
 
     ...  # TODO: ADD YOUR CODE HERE
-    nonce = ...
-    ciphertext, tag = ..., ...
+    nonce = urandom(12)
+    cipher = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    ciphertext, tag = cipher.encrypt_and_digest(message)
 
     return nonce, ciphertext, tag
 
