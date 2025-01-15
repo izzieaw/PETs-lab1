@@ -186,11 +186,13 @@ def point_scalar_multiplication_double_and_add(a: Integer, b: Integer, p: Intege
         return Q
 
     """
+
     result = Point(None, None)
 
     for i in range(scalar.size_in_bits()):
-        # TODO: ADD YOUR CODE HERE
-        pass
+        if (scalar >> i) & Integer(1) == Integer(1):
+            result = point_add(a=a, b=b, p=p, point0=result, point1=point)
+        point = point_double(a=a, b=b, p=p, point=point)
 
     return result
 
