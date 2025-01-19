@@ -220,11 +220,16 @@ def point_scalar_multiplication_montgomerry_ladder(a: Integer, b: Integer, p: In
 
     for i in reversed(range(0, scalar.size_in_bits())):
         if (scalar >> i) & Integer(1) == Integer(0):
-            res0 = point_double(a=a, b=b, p=p, point=res0)
-            res1 = point_add(a=a, b=b, p=p, point0=res0, point1=res1)
+            res0_new = point_double(a=a, b=b, p=p, point=res0)
+            res1_new = point_add(a=a, b=b, p=p, point0=res0, point1=res1)
+            res0 = res0_new
+            res1 = res1_new
         else:
-            res0 = point_add(a=a, b=b, p=p, point0=res0, point1=res1)
-            res1 = point_double(a=a, b=b, p=p, point=res1)
+            res0_new = point_add(a=a, b=b, p=p, point0=res0, point1=res1)
+            res1_new = point_double(a=a, b=b, p=p, point=res1)
+            res0 = res0_new
+            res1 = res1_new
+
     return res0
 
 
