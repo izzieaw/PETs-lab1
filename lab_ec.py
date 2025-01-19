@@ -313,8 +313,8 @@ def dh_encrypt(pub: PubDHKey, message: Message, alice_sig: PrivSignKey) -> tuple
         - Sign the message with Alice's signing key.
     """
 
-    # TODO: ADD YOUR CODE HERE
-    ...
+    # generate priv using _point_to_bytes() and random generator
+    # group, priv_dec, pub_enc = dh_get_key(priv)
     pass
 
 
