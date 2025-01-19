@@ -261,19 +261,23 @@ def ecdsa_key_gen() -> tuple[PrivSignKey, PubVerifyKey]:
 
 def ecdsa_sign(priv_sign: PrivSignKey, message: Message) -> Signature:
     """Sign the SHA256 digest of the message using ECDSA and return a signature"""
-    # TODO: ADD YOUR CODE HERE
-    SHA256.new(...)
-    signer = DSS.new(..., mode='fips-186-3')
+    h = SHA256.new(message)
+    signer = DSS.new(priv_sign, mode='fips-186-3')
+    signature = signer.sign(h)
 
-    return ...
+    return signature
 
 
 def ecdsa_verify(pub_verify: PubVerifyKey, message: Message, sig: Signature) -> bool:
     """Verify the ECDSA signature on the message"""
-    # TODO: ADD YOUR CODE HERE
-    verifier = DSS.new(..., mode='fips-186-3')
-
-    return ...
+    h = SHA256.new(message)
+    verifier = DSS.new(pub_verify, mode='fips-186-3')
+    try:
+        verifier.verify(h, sig)
+        print("The message is authentic.")
+    except ValueError:
+        print("The message is not authentic.")
+        raise
 
 
 #####################################################
