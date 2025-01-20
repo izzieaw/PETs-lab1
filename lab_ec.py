@@ -316,7 +316,7 @@ def dh_encrypt(pub: PubDHKey, message: Message, alice_sig: PrivSignKey) -> tuple
     """
 
     _, priv_dec, _ = dh_get_key()
-    shared_key = priv_dec * pub # skB * skA * group
+    shared_key = priv_dec * pub # skA * skB * group
 
     sym_key = HKDF(_point_to_bytes(shared_key), 32, None, SHA256, 1)
     nonce, ciphertext, tag = encrypt_message(sym_key, message)
@@ -354,8 +354,16 @@ from pytest import raises
 def test_encrypt():
     _, _, bob_pub_enc = dh_get_key()
     alice_sign, _ = ecdsa_key_gen()
-    ...
-    assert False
+
+    message = b"Hello World!"
+    _, priv_dec, _ = dh_get_key()
+    shared_key = priv_dec * bob_pub_enc # skB * skA * group
+    sym_key = HKDF(_point_to_bytes(shared_key), 32, None, SHA256, 1)
+    nonce, ciphertext, tag = encrypt_message(sym_key, message)
+    sig = ecdsa_sign(alice_sign, message)
+    assert len(nonce) == 12
+    assert len(ciphertext) == len(message)
+    assert len(tag) == 16
 
 
 @pytest.mark.task5
