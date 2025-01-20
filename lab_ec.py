@@ -315,11 +315,10 @@ def dh_encrypt(pub: PubDHKey, message: Message, alice_sig: PrivSignKey) -> tuple
         - Sign the message with Alice's signing key.
     """
 
-    group, priv_dec, pub_enc = dh_get_key()
+    _, priv_dec, _ = dh_get_key()
     shared_key = priv_dec * pub # skB * skA * group
 
-    salt = urandom(16)
-    sym_key = HKDF(_point_to_bytes(shared_key), 32, salt, SHA256, 1)
+    sym_key = HKDF(_point_to_bytes(shared_key), 32, None, SHA256, 1)
     nonce, ciphertext, tag = encrypt_message(sym_key, message)
     sig = ecdsa_sign(alice_sig, message)
 
@@ -332,9 +331,12 @@ def dh_decrypt(priv: PrivDHKey, fresh_pub: PubDHKey, auth_ciphertext: AuthEncryp
     Verify the message came from Alice using her verification
     key."""
 
-    # TODO: ADD YOUR CODE HERE
-    ...
-    pass
+    shared_key = priv * fresh_pub
+    sym_key = HKDF(_point_to_bytes(shared_key), 32, None, SHA256, 1)
+    plaintext = decrypt_message(sym_key, auth_ciphertext)
+    ecdsa_verify(alice_ver, plaintext, sig)
+
+    return plaintext
 
 
 # TODO: POPULATE THESE (OR MORE) TESTS
