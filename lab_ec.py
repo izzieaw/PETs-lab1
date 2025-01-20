@@ -286,6 +286,8 @@ def ecdsa_verify(pub_verify: PubVerifyKey, message: Message, sig: Signature) -> 
 #           - Use Bob's public key to encrypt a message.
 #           - Use Bob's private key to decrypt the message.
 
+from Cryptodome.Protocol.KDF import HKDF
+
 PrivDHKey = Integer
 PubDHKey = ECC.EccPoint
 
@@ -313,9 +315,15 @@ def dh_encrypt(pub: PubDHKey, message: Message, alice_sig: PrivSignKey) -> tuple
         - Sign the message with Alice's signing key.
     """
 
-    # generate priv using _point_to_bytes() and random generator
-    # group, priv_dec, pub_enc = dh_get_key(priv)
-    pass
+    group, priv_dec, pub_enc = dh_get_key()
+    shared_key = priv_dec * pub # skB * skA * group
+
+    salt = urandom(16)
+    sym_key = HKDF(_point_to_bytes(shared_key), 32, salt, SHA256, 1)
+    nonce, ciphertext, tag = encrypt_message(sym_key, message)
+    sig = ecdsa_sign(alice_sig, message)
+
+    return nonce, ciphertext, tag, sig
 
 
 def dh_decrypt(priv: PrivDHKey, fresh_pub: PubDHKey, auth_ciphertext: AuthEncryption, sig: Signature, alice_ver: PubVerifyKey) -> Message:
