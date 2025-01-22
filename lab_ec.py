@@ -315,14 +315,14 @@ def dh_encrypt(pub: PubDHKey, message: Message, alice_sig: PrivSignKey) -> tuple
         - Sign the message with Alice's signing key.
     """
 
-    _, priv_dec, _ = dh_get_key() # generate a private key for Alice
+    _, priv_dec, pub_dec = dh_get_key() # generate private & public keys for Alice
     shared_key = priv_dec * pub # skA * skB * group
 
     sym_key = HKDF(_point_to_bytes(shared_key), 32, None, SHA256, 1)
     nonce, ciphertext, tag = encrypt_message(sym_key, message)
     sig = ecdsa_sign(alice_sig, message)
 
-    return nonce, ciphertext, tag, sig
+    return pub_dec, nonce, ciphertext, tag, sig
 
 
 def dh_decrypt(priv: PrivDHKey, fresh_pub: PubDHKey, auth_ciphertext: AuthEncryption, sig: Signature, alice_ver: PubVerifyKey) -> Message:
@@ -372,17 +372,13 @@ def test_decrypt():
     alice_sign, alice_ver = ecdsa_key_gen()
     
     message = b"Hello World!"
-    _, alice_priv_enc, alice_pub_enc = dh_get_key()
-    shared_keyA = alice_priv_enc * bob_pub_enc
-    shared_keyB = bob_priv_enc * alice_pub_enc
-    assert shared_keyA == shared_keyB, "Shared keys don't match"
 
-    nonce, ciphertext, tag, sig = dh_encrypt(bob_pub_enc, message, alice_sign)
+    alice_pub, nonce, ciphertext, tag, sig = dh_encrypt(bob_pub_enc, message, alice_sign)
     assert len(nonce) == 12
     assert len(ciphertext) == len(message)
     assert len(tag) == 16
 
-    m = dh_decrypt(alice_priv_enc, bob_pub_enc, ciphertext, sig, alice_ver)
+    m = dh_decrypt(bob_priv_enc, alice_pub, (nonce, ciphertext, tag), sig, alice_ver)
     assert m == message
 
 
