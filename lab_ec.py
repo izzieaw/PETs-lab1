@@ -384,17 +384,23 @@ def test_decrypt():
 
 @pytest.mark.task5
 def test_fails_decryption_wrong_ciphertext_nonce():
-    ...
+    _, bob_priv_enc, bob_pub_enc = dh_get_key()
+    alice_sign, alice_ver = ecdsa_key_gen() 
+    message = b"Hello World!"
+    alice_pub, nonce, ciphertext, tag, sig = dh_encrypt(bob_pub_enc, message, alice_sign)
     with raises(Exception) as excinfo:
-        dh_decrypt(...)
+        dh_decrypt(bob_priv_enc, alice_pub, (urandom(len(nonce)), ciphertext, tag), sig, alice_ver)
     assert "MAC check failed" in str(excinfo.value)
 
 
 @pytest.mark.task5
 def test_fails_decryption_wrong_ciphertext_tag():
-    ...
+    _, bob_priv_enc, bob_pub_enc = dh_get_key()
+    alice_sign, alice_ver = ecdsa_key_gen() 
+    message = b"Hello World!"
+    alice_pub, nonce, ciphertext, tag, sig = dh_encrypt(bob_pub_enc, message, alice_sign)
     with raises(Exception) as excinfo:
-        dh_decrypt(...)
+        dh_decrypt(bob_priv_enc, alice_pub, (nonce, ciphertext, urandom(len(tag))), sig, alice_ver)
     assert "MAC check failed" in str(excinfo.value)
 
 
