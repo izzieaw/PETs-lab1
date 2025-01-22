@@ -315,7 +315,7 @@ def dh_encrypt(pub: PubDHKey, message: Message, alice_sig: PrivSignKey) -> tuple
         - Sign the message with Alice's signing key.
     """
 
-    _, priv_dec, _ = dh_get_key()
+    _, priv_dec, _ = dh_get_key() # generate a private key for Alice
     shared_key = priv_dec * pub # skA * skB * group
 
     sym_key = HKDF(_point_to_bytes(shared_key), 32, None, SHA256, 1)
@@ -331,7 +331,7 @@ def dh_decrypt(priv: PrivDHKey, fresh_pub: PubDHKey, auth_ciphertext: AuthEncryp
     Verify the message came from Alice using her verification
     key."""
 
-    shared_key = priv * fresh_pub
+    shared_key = priv * fresh_pub 
     sym_key = HKDF(_point_to_bytes(shared_key), 32, None, SHA256, 1)
     plaintext = decrypt_message(sym_key, auth_ciphertext)
     ecdsa_verify(alice_ver, plaintext, sig)
@@ -357,10 +357,10 @@ def test_encrypt():
 
     message = b"Hello World!"
     _, priv_dec, _ = dh_get_key()
-    shared_key = priv_dec * bob_pub_enc # skB * skA * group
+    shared_key = priv_dec * bob_pub_enc 
     sym_key = HKDF(_point_to_bytes(shared_key), 32, None, SHA256, 1)
     nonce, ciphertext, tag = encrypt_message(sym_key, message)
-    sig = ecdsa_sign(alice_sign, message)
+    ecdsa_sign(alice_sign, message)
     assert len(nonce) == 12
     assert len(ciphertext) == len(message)
     assert len(tag) == 16
@@ -370,8 +370,20 @@ def test_encrypt():
 def test_decrypt():
     _, bob_priv_enc, bob_pub_enc = dh_get_key()
     alice_sign, alice_ver = ecdsa_key_gen()
-    ...
-    assert False
+    
+    message = b"Hello World!"
+    _, alice_priv_enc, alice_pub_enc = dh_get_key()
+    shared_keyA = alice_priv_enc * bob_pub_enc
+    shared_keyB = bob_priv_enc * alice_pub_enc
+    assert shared_keyA == shared_keyB, "Shared keys don't match"
+
+    nonce, ciphertext, tag, sig = dh_encrypt(bob_pub_enc, message, alice_sign)
+    assert len(nonce) == 12
+    assert len(ciphertext) == len(message)
+    assert len(tag) == 16
+
+    m = dh_decrypt(alice_priv_enc, bob_pub_enc, ciphertext, sig, alice_ver)
+    assert m == message
 
 
 @pytest.mark.task5
