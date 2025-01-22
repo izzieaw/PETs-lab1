@@ -424,7 +424,16 @@ If you implemented task 5, your coverage should be 100%. If it's not, where is i
 Why is coverage important for tests, especially with cryptography?
 Is high coverage enough to ensure high quality cryptographic software?
 
-TODO: ADD YOUR ANSWER HERE
+
+Coverage is important for tests as it indicates what percentage of the code undergoes testing. The more code is tested i.e. the higher the coverage, 
+the more likely bugs and vulnerabilities will be identified and fixed. Cryptography deals with sensitive data, like plaintext and keys, so having high coverage
+is important to eliminate bugs & vulnerabilities., as one bug/vulnerability could enable an attack or sensitive data leakage.
+
+High coverage alone is not enough to ensure high quality cryptographic software. Cryptographic software tends to be complex, so most testing cannot cover
+every possible case or may not be able to detect every possible attack. Adopting secure coding practices as well as high coverage would help to ensure high 
+quality software. This includes peer reviews and auditing code to detect e.g. insecure random number generation or poor key handling. It's also important to 
+have high quality tests, as having high coverage through poor quality tests is much less effective than secure, thorough tests.
+
 """
 
 
